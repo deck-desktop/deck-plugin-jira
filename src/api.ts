@@ -203,7 +203,7 @@ export function columnsFor(issues: readonly Issue[]): { status: string; category
 export async function search(): Promise<Issue[]> {
   const { email, token, jql } = settings;
   const host = siteHost(settings.site);
-  if (!host || !email || !token) throw new Error("not configured — see Settings › Plugins › Jira");
+  if (!host || !email || !token) throw new Error("not configured — see Jira's settings (the gear on Jira in Plugins › Installed)");
 
   const params = new URLSearchParams({
     jql: jql.trim() || DEFAULT_JQL,

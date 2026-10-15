@@ -65,9 +65,13 @@ export default function Jira() {
         <div className="max-w-md space-y-2">
           <h2 className="text-lg font-semibold text-text-primary">Jira is not connected</h2>
           <p className="text-sm text-text-secondary">
-            Settings › Plugins › Jira takes your site, the email on your Atlassian account, and an
-            API token. Nothing is sent anywhere but your own Jira.
+            Jira's settings take your site, the email on your Atlassian account, and an API token.
+            Nothing is sent anywhere but your own Jira.
           </p>
+          <button onClick={() => window.dispatchEvent(new CustomEvent("deck-navigate", { detail: "plugin-settings:jira" }))}
+            className="rounded-lg border border-subtle bg-elev px-3 py-1.5 text-[13px] text-text-secondary hover:border-accent hover:text-text-primary">
+            Open Jira settings
+          </button>
         </div>
       </div>
     );
