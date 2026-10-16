@@ -66,7 +66,7 @@ export async function load(): Promise<void> {
 export async function update(patch: Partial<JiraSettings>): Promise<void> {
   settings = { ...settings, ...patch };
   emit();
-  await configWrite(CFG, JSON.stringify(settings, null, 2)).catch(() => {});
+  await configWrite(CFG, JSON.stringify(settings, null, 2)).catch((e) => console.warn("[jira] settings save failed", e));
 }
 
 // ---- the API ----------------------------------------------------------------------------
