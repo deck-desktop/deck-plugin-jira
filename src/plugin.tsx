@@ -4,7 +4,7 @@
 // you find out what the ticket is and go to it. Transitions and comments are what Jira's own
 // UI does well, and duplicating them here would mean keeping up with workflows Deck cannot see.
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { RefreshCw, ExternalLink, AlertTriangle, Search } from "lucide-react";
+import { RefreshCw, ExternalLink, AlertTriangle, Search, Unplug } from "lucide-react";
 import { openExternal } from "../shim/bridge.js";
 import { Field, TextInput } from "../shim/ui.js";
 import {
@@ -27,8 +27,8 @@ function ago(ms: number): string {
 /** A column's dot colour, from its status category. */
 const CATEGORY_COLOR: Record<Issue["category"], string> = {
   todo: "var(--text-muted)",
-  doing: "var(--accent)",
-  done: "#3fb950",
+  doing: "rgb(var(--tone-blue-400))",
+  done: "rgb(var(--tone-green-400))",
 };
 
 export default function Jira() {
@@ -61,17 +61,22 @@ export default function Jira() {
 
   if (!on) {
     return (
-      <div className="grid h-full w-full place-items-center p-8 text-center">
-        <div className="max-w-md space-y-2">
-          <h2 className="text-lg font-semibold text-text-primary">Jira is not connected</h2>
-          <p className="text-sm text-text-secondary">
-            Jira's settings take your site, the email on your Atlassian account, and an API token.
-            Nothing is sent anywhere but your own Jira.
-          </p>
-          <button onClick={() => window.dispatchEvent(new CustomEvent("deck-navigate", { detail: "plugin-settings:jira" }))}
-            className="rounded-lg border border-subtle bg-elev px-3 py-1.5 text-[13px] text-text-secondary hover:border-accent hover:text-text-primary">
-            Open Jira settings
-          </button>
+      <div className="grid h-full w-full place-items-center p-8">
+        <div className="flex max-w-md items-start gap-3 rounded-lg border border-subtle px-4 py-4"
+          style={{ background: "var(--bg-elev)" }}>
+          <Unplug size={16} className="mt-0.5 shrink-0 text-text-muted" />
+          <div className="space-y-2">
+            <h2 className="text-[13px] font-medium text-text-primary">Jira is not connected</h2>
+            <p className="text-[12px] leading-relaxed text-text-muted">
+              Jira's settings take your site, the email on your Atlassian account, and an API token.
+              Nothing is sent anywhere but your own Jira.
+            </p>
+            <button onClick={() => window.dispatchEvent(new CustomEvent("deck-navigate", { detail: "plugin-settings:jira" }))}
+              className="h-8 rounded-lg px-3 text-[12.5px] font-medium text-white transition hover:brightness-110"
+              style={{ background: "var(--accent)" }}>
+              Open Jira settings
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -82,36 +87,36 @@ export default function Jira() {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       <div className="mb-4 flex shrink-0 items-center gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text-primary">Jira</h1>
-          <p className="mt-0.5 text-sm text-text-muted">
+        <div className="flex min-w-0 items-baseline gap-2">
+          <h1 className="text-[15px] font-semibold text-text-primary">Jira</h1>
+          <span className="text-[11.5px] text-text-muted">
             {issues === null ? "Loading…"
               : `${issues.length} ${issues.length === 1 ? "ticket" : "tickets"}`}
-          </p>
+          </span>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <div className="relative">
-            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
+            <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
             <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter"
-              className="h-9 w-44 rounded-md border border-strong bg-elev pl-8 pr-3 text-sm text-text-primary placeholder:text-text-muted outline-none transition focus:border-accent" />
+              className="h-8 w-44 rounded-lg border border-subtle bg-elev pl-8 pr-3 text-[12.5px] text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-[var(--accent)]" />
           </div>
           <button onClick={refresh} disabled={busy} title="Refresh"
-            className="flex h-9 items-center gap-1.5 rounded-md border border-subtle px-3 text-[12px] text-text-muted transition hover:text-text-primary disabled:opacity-50">
-            <RefreshCw size={13} className={busy ? "animate-spin" : ""} /> Refresh
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-subtle bg-elev px-3 text-[12px] text-text-secondary transition-colors hover:border-strong hover:text-text-primary disabled:opacity-50">
+            <RefreshCw size={12} className={busy ? "animate-spin" : ""} /> Refresh
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-3 flex shrink-0 items-start gap-2 rounded-lg border px-3 py-2 text-[12px]"
-          style={{ borderColor: "var(--border-strong)", background: "var(--bg-card)", color: "var(--text-secondary)" }}>
-          <AlertTriangle size={13} className="mt-0.5 shrink-0" style={{ color: "var(--danger)" }} />
+        <div className="mb-3 flex shrink-0 items-start gap-2 rounded-lg border border-subtle px-3 py-2 text-[12px] text-text-secondary"
+          style={{ background: "var(--bg-elev)" }}>
+          <AlertTriangle size={13} className="mt-0.5 shrink-0 text-red-400" />
           {error}
         </div>
       )}
 
       {issues !== null && shown.length === 0 && !error && (
-        <p className="px-1 py-6 text-center text-sm text-text-muted">
+        <p className="px-1 py-6 text-center text-[12.5px] text-text-muted">
           {filter ? "Nothing matches that filter." : "No tickets came back for this query."}
         </p>
       )}
@@ -125,12 +130,13 @@ export default function Jira() {
         {columns.map((col) => {
           const cards = shown.filter((i) => (i.status || "(no status)") === col.status);
           return (
-            <div key={col.status} className="flex min-h-0 min-w-0 flex-col rounded-xl border border-subtle"
-              style={{ background: "var(--bg-card-glass)" }}>
-              <div className="flex shrink-0 items-center gap-2 px-3 py-2.5">
-                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: CATEGORY_COLOR[col.category] }} />
-                <span className="truncate text-[12px] font-semibold uppercase tracking-wide text-text-secondary">{col.status}</span>
-                <span className="ml-auto text-[11px] tabular-nums text-text-muted">{cards.length}</span>
+            <div key={col.status} className="flex min-h-0 min-w-0 flex-col rounded-lg border border-subtle"
+              style={{ background: "var(--bg-panel-glass)" }}>
+              <div className="flex h-9 shrink-0 items-center gap-2 px-3">
+                <span className="size-[7px] shrink-0 rounded-full" style={{ background: CATEGORY_COLOR[col.category] }} />
+                <span className="truncate text-[12px] font-medium text-text-secondary">{col.status}</span>
+                <span className="ml-auto flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[10.5px] tabular-nums text-text-secondary"
+                  style={{ background: "var(--bg-elev)" }}>{cards.length}</span>
               </div>
               <div className="scroll-thin min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2 pb-2">
                 {cards.map((i) => (
@@ -138,8 +144,8 @@ export default function Jira() {
                   // link behind a small icon is a target to aim at for no reason.
                   <button key={i.key} onClick={() => void openExternal(i.url)}
                     title={`${i.status}${i.assignee ? ` · ${i.assignee}` : ""}\n\nOpen ${i.key} in your browser`}
-                    className="group w-full rounded-lg border border-subtle px-2.5 py-2 text-left transition-colors hover:border-accent-soft"
-                    style={{ background: "var(--bg-elev)" }}>
+                    className="group w-full rounded-lg border border-subtle px-2.5 py-2 text-left transition-colors hover:border-strong"
+                    style={{ background: "var(--bg-card)" }}>
                     <div className="flex items-center gap-2">
                       <span className="truncate font-mono text-[11px] text-text-secondary">{i.key}</span>
                       <ExternalLink size={10} className="ml-auto shrink-0 text-text-muted opacity-0 transition-opacity group-hover:opacity-100" />
@@ -206,7 +212,7 @@ export function Settings() {
 
       {s.jql.trim() && s.jql.trim() !== DEFAULT_JQL && (
         <button onClick={() => void update({ jql: DEFAULT_JQL })}
-          className="rounded-md border border-subtle bg-elev px-3 py-1.5 text-[12px] text-text-secondary transition hover:text-text-primary">
+          className="h-8 rounded-lg border border-subtle bg-elev px-3 text-[12px] text-text-secondary transition-colors hover:border-strong hover:text-text-primary">
           Reset the query
         </button>
       )}
