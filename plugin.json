@@ -4,6 +4,6 @@
   "description": "The tickets assigned to you, read straight from your Jira with an API token.",
   "icon": "SquareKanban",
   "color": "#3b82f6",
-  "version": "1.0.3",
-  "minDeck": "1.5.0"
+  "version": "1.1.0",
+  "minDeck": "1.6.0"
 }
